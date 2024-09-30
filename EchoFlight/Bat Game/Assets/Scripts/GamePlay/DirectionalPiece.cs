@@ -141,7 +141,6 @@ public class DirectionalPiece : MonoBehaviour, ISelectHandler
     {
         transform.SetParent(startParent);
         selectableComp.interactable = true;
-        PlayerController.PlayerCollision -= Respawn;
     }
 
     /// <summary>
@@ -150,7 +149,6 @@ public class DirectionalPiece : MonoBehaviour, ISelectHandler
     public void HighlightArrow()
     {
         arrowShadowEffect.enabled = true;
-        PlayerController.PlayerCollision += Respawn;
     }
 
     /// <summary>
@@ -160,15 +158,6 @@ public class DirectionalPiece : MonoBehaviour, ISelectHandler
     {
         arrowShadowEffect.enabled = false;
         finishedCover.SetActive(true);
-    }
-
-    public void Respawn(float pts)
-    {
-        if (pts == -100) //only reset if this is a respawn
-        {
-            arrowShadowEffect.enabled = false;
-            finishedCover.SetActive(false);
-        }
     }
 
 }

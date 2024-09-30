@@ -12,9 +12,4 @@ public class BugItem : MonoBehaviour
         return points;
     }
 
-    public void Respawn()
-    {
-        gameObject.SetActive(true);
-    }
-
 }

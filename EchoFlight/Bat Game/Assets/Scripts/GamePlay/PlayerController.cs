@@ -8,9 +8,11 @@ public class PlayerController : MovesAlongRoute
     public delegate void OnPlayerRouteEnd();
     public static event OnPlayerRouteEnd PlayerReachesEnd;
 
-    public delegate void OnPlayerCollision(float awardedPoints);
+    public delegate void OnPlayerCollision(float awardedPoints, CollisionType type);
     public static event OnPlayerCollision PlayerCollision;
 
+
+    public enum CollisionType { Bug, Obstacle, Exit}
 
     // Update is called once per frame
     void Update()
@@ -45,6 +47,7 @@ public class PlayerController : MovesAlongRoute
     private void OnCollisionEnter2D(Collision2D collision)
     {
         float awardedPointsForCollision = 0;
+        CollisionType collisionType = CollisionType.Bug;
         //if collision is with bug
         if (collision.gameObject.TryGetComponent<BugItem>(out BugItem bugItem))
         {
@@ -57,17 +60,27 @@ public class PlayerController : MovesAlongRoute
         //if collision is with Obstacle
         if (collision.gameObject.CompareTag("Obstacle"))
         {
-            //remove life and respawn
-            //if life reaches game over state exit game
-            GameManager.PlayerDeath();
+            collisionType = CollisionType.Obstacle;
+           
 
-            awardedPointsForCollision = -100f;
+            awardedPointsForCollision = -10f;
 
             gameObject.SetActive(false);
 
         }
 
-        PlayerCollision?.Invoke(awardedPointsForCollision);
+        if (collision.gameObject.CompareTag("Exit"))
+        {
+            collisionType = CollisionType.Exit;
+
+            //for future features, consider scenarios that if conditions are met, give extra points
+            if (GameManager.memoryModeOn)
+            {
+                awardedPointsForCollision = GameManager.GetCurrentLevelMemoryScoreBonus();
+            }
+        }
+
+        PlayerCollision?.Invoke(awardedPointsForCollision, collisionType);
         
     }
 
