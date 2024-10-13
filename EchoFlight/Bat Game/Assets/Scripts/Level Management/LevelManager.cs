@@ -21,8 +21,8 @@ public class LevelManager : MonoBehaviour
     public LevelInstructions levelInstructions;
     private void Start()
     {
-        levelScore = GetCurrentLevelTargetScore();
-        levelScore -= bugList.Length * 10;
+       // levelScore = GetCurrentLevelTargetScore();
+       // levelScore -= bugList.Length * 10;
 
         PlayerController.PlayerCollision += CollisionOccured;
 

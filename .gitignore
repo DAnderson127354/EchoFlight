@@ -1,0 +1,10 @@
+
+/EchoFlight/Bat Game/Library
+*.vsidx
+/EchoFlight/Bat Game/.vs
+EchoFlight/Bat Game/.vsconfig
+EchoFlight/Bat Game/Assembly-CSharp.csproj
+*.log
+*.log
+/EchoFlight/Bat Game/Logs
+EchoFlight/Bat Game/Assembly-CSharp.csproj
