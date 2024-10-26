@@ -7,7 +7,6 @@ using UnityEngine.UI;
 /// Acts as a piece of instruction for the bat to follow as movement
 /// Can be selected and dragged to fit in the interative fields of the UI
 /// </summary>
-
 public class DirectionalPiece : MonoBehaviour, ISelectHandler
 {
     public LevelInstructions levelInstructionManager;
@@ -20,7 +19,6 @@ public class DirectionalPiece : MonoBehaviour, ISelectHandler
 
     [Header("Direction Data")]
     public RouteData route;
-
 
     private Vector2 startSpot;
     private Transform startParent;
@@ -60,8 +58,8 @@ public class DirectionalPiece : MonoBehaviour, ISelectHandler
     public void OnDragStart()
     {
         stillOn = true;
-
-        startMouseSpot = Input.mousePosition;
+        
+        startMouseSpot = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         StartCoroutine(StartDrag());
     }
 
@@ -75,7 +73,7 @@ public class DirectionalPiece : MonoBehaviour, ISelectHandler
         yield return new WaitForSeconds(0.3f);
 
         //Check if the mouse has moved too far away
-        if (Vector2.Distance(Input.mousePosition, startMouseSpot) > 50f)
+        if (Vector2.Distance(Camera.main.ScreenToWorldPoint(Input.mousePosition), startMouseSpot) > 50f)
         {
             stillOn = false;
             EventSystem.current.SetSelectedGameObject(null);
@@ -92,7 +90,7 @@ public class DirectionalPiece : MonoBehaviour, ISelectHandler
     IEnumerator WhileDragging()
     {
         //for computer
-        Vector2 mousePos = Input.mousePosition;
+        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         transform.position = mousePos;
 
         if (!Input.GetMouseButton(0))

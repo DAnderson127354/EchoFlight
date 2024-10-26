@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Guides and Visuals\EchoLocate.cs" />
+    <Compile Include="Assets\Scripts\Level Management\LevelDatabase.cs" />
     <Compile Include="Assets\Scripts\GamePlay\BezierRoute.cs" />
     <Compile Include="Assets\Scripts\GamePlay\DrawBezierRoute.cs" />
     <Compile Include="Assets\Scripts\GamePlay\MovesAlongRoute.cs" />

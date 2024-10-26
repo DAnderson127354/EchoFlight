@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Manages the actions, collisions and movement of the Player
+/// </summary>
 public class PlayerController : MovesAlongRoute
 {
 
@@ -10,6 +11,9 @@ public class PlayerController : MovesAlongRoute
 
     public delegate void OnPlayerCollision(float awardedPoints, CollisionType type);
     public static event OnPlayerCollision PlayerCollision;
+
+    public delegate void OnEchoLocation();
+    public static event OnEchoLocation EchoLocateCalled;
 
     public enum CollisionType { Bug, Obstacle, Exit}
 
@@ -55,26 +59,34 @@ public class PlayerController : MovesAlongRoute
 
             beamRoute.transform.SetPositionAndRotation(transform.position, Quaternion.Euler(0, 0, angle));
 
-            Debug.Log(mousePos);
+            //Debug.Log(mousePos);
             if (Input.GetMouseButton(0) && (mousePos.y > screenEdgeY && mousePos.x < screenEdgeX))
             {
-                if (GameManager.memoryModeOn)
-                {
-                    //fail condition
-                    GameManager.memoryModeOn = false;
-                }
-
-                beamRoute.SetActive(false);
-                echoBeam.gameObject.SetActive(true);
-                echoBeam.transform.SetPositionAndRotation(transform.position, Quaternion.Euler(0, 0, angle+45));
-
-                echoBeam.AddForce(echoBeam.transform.rotation * beamForce, ForceMode2D.Impulse);
-                echoLocateOn = false;
-
+                EchoLocate(angle);
             }
         }
 
     }
+
+    private void EchoLocate(float angle)
+    {
+        if (GameManager.memoryModeOn)
+        {
+            //fail condition
+            GameManager.memoryModeOn = false;
+        }
+
+        beamRoute.SetActive(false);
+        echoBeam.gameObject.SetActive(true);
+        echoBeam.transform.SetPositionAndRotation(transform.position, Quaternion.Euler(0, 0, angle + 45));
+
+        echoBeam.AddForce(echoBeam.transform.rotation * beamForce, ForceMode2D.Impulse);
+        echoLocateOn = false;
+
+        EchoLocateCalled?.Invoke();
+    }
+
+
 
     private void OnDisable()
     {
@@ -102,12 +114,6 @@ public class PlayerController : MovesAlongRoute
         if (collision.gameObject.CompareTag("Obstacle"))
         {
             collisionType = CollisionType.Obstacle;
-           
-
-            awardedPointsForCollision = -10f;
-
-            gameObject.SetActive(false);
-
         }
 
         if (collision.gameObject.CompareTag("Exit"))

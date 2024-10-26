@@ -8,9 +8,9 @@ using static GameManager;
 public class TitleScreen : MonoBehaviour
 {
     [Tooltip("Base levels, includes both easy and medium")]
-    public List<Level> levelList;
+    public LevelDatabase levelList;
     [Tooltip("Extra levels for HardMode")]
-    public List<Level> levelList_HardOnly;
+    public LevelDatabase levelList_HardOnly;
 
     //Settings on the title screen
     public Toggle guideModeToggle;
@@ -87,13 +87,13 @@ public class TitleScreen : MonoBehaviour
         if (gameMode == GameMode.Hard)
         {
             //include extra levels in Hard mode
-            levels = new Level[levelList.Count + levelList_HardOnly.Count];
-            levelList.CopyTo(levels);
-            levelList_HardOnly.CopyTo(levels, levelList.Count-1);
+            levels = new Level[levelList.levels.Count + levelList_HardOnly.levels.Count];
+            levelList.levels.CopyTo(levels);
+            levelList_HardOnly.levels.CopyTo(levels, levelList.levels.Count-1);
         }
         else
         {
-            levels = levelList.ToArray();
+            levels = levelList.levels.ToArray();
         }
 
 

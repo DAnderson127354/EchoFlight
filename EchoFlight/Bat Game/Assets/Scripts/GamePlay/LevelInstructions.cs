@@ -2,6 +2,9 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Manages the requirements for completion of the level by processing the "instructions" the player slots in
+/// </summary>
 public class LevelInstructions : MonoBehaviour
 {
     [SerializeField]
@@ -101,6 +104,9 @@ public class LevelInstructions : MonoBehaviour
         goBttn.interactable = false;
     }
 
+    /// <summary>
+    /// End of the current route, so check conditions for next move
+    /// </summary>
     public void CurrentRouteFinished()
     {
         myRoutes[currentRoute].HighLightInstruction(false);
@@ -133,7 +139,7 @@ public class LevelInstructions : MonoBehaviour
         int filledSpots = 0;
         for (int i = 0; i < instructionSpots.Length; i++)
         {
-            if (CheckOverlap(instructionSpots[i], piece.transform))
+            if (CheckOverlap(piece.transform, instructionSpots[i]))
             {
                 if (instructionSpots[i].transform.childCount > 0)
                 {
@@ -170,13 +176,21 @@ public class LevelInstructions : MonoBehaviour
     /// <returns></returns>
     private bool CheckOverlap(Transform rect1, Transform rect2)
     {
+        //Get the position within the UI screen space
+        Vector3 pos1 = Camera.main.WorldToScreenPoint(rect1.position);
+        Vector3 pos2 = Camera.main.WorldToScreenPoint(rect2.position);
+
+        //for at least one of the rects, we want to get the boundaries that the other rect's position must be between
+        //we do this by getting half of the total width and height that we can then add to/subtract from the same rect's
+        //position (which is in the middile of the UI image)
         float width = rect2.GetComponent<RectTransform>().rect.width / 2;
         float height = rect2.GetComponent<RectTransform>().rect.height / 2;
 
-        if (rect1.position.x <= (rect2.position.x + width) && rect1.position.x >= (rect2.position.x - width))
+        if (pos1.x <= (pos2.x + width) && pos1.x >= (pos2.x - width))
         {
-            if (rect1.position.y <= (rect2.position.y + height) && rect1.position.y >= (rect2.position.y - height))
+            if (pos1.y <= (pos2.y + height) && pos1.y >= (pos2.y - height))
             {
+                //Debug.Log("within bounds!");
                 return true;
             }
         }

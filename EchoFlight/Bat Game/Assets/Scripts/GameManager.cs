@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public static bool fullScoreModeOn = false;
 
     //Level Management
-    public static Level[] levels;
+    public static Level[] levels = new Level[0];
     private static int currentLevel = 0;
 
     //Player Health system
