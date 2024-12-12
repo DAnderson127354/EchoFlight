@@ -29,7 +29,17 @@ public class LevelManager : MonoBehaviour
     public Text echoesUsedTxt;
     public Text totalPointsTxt;
 
-    
+    [Header("Final Results")]
+    public GameObject endScreen;
+    public Text finishStateTxt;
+    public Text bugsTotalPointsTxt;
+    public Text echoesTotalTxt;
+    public Text difficultyBonusTxt;
+    public Text memoryBonusTxt;
+    public Text totalScoreTxt;
+
+    public Button nextLevelBttn;
+    public Button retryLevelBttn;
 
 #if UNITY_EDITOR
     [Header("In-Editor Run Only")]
@@ -67,18 +77,26 @@ public class LevelManager : MonoBehaviour
         PlayerController.EchoLocateCalled -= EchoSent;
     }
 
+    /// <summary>
+    /// Updates the display of our current stats
+    /// </summary>
+    /// <param name="bugAddition"></param>
+    /// <param name="echoAddition"></param>
     public void UpdateStats(int bugAddition, int echoAddition)
     {
         bugsEaten += bugAddition;
         echosUsed += echoAddition;
 
-        bugsEatenTxt.text = "Bugs Eaten: " + bugsEaten + "/" + bugList.Length;
-        echoesUsedTxt.text = "Echoes Used: " + echosUsed;
+        bugsEatenTxt.text = bugsEaten + "/" + bugList.Length;
+        echoesUsedTxt.text = "" + echosUsed;
 
-        totalPointsTxt.text = "Total Points: " + levelScore + "/" + targetScore;
+        levelScore += bugAddition * 10;
+        totalPointsTxt.text = "Total: " + levelScore + "/" + targetScore;
     }
 
-
+    /// <summary>
+    /// Restarts the level
+    /// </summary>
     public void Respawn()
     {
         //include slight delay here to showcase death animation when it is added
@@ -87,10 +105,19 @@ public class LevelManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    /// <summary>
+    /// Function event called when echo is used
+    /// </summary>
     public void EchoSent()
     {
         UpdateStats(0, 1);
         //need to add more to this to update points as well as check memory mode conditions
+
+        if (memoryModeOn)
+        {
+            //show fail state
+            PlayerDeath();
+        }
     }
 
 
@@ -118,44 +145,81 @@ public class LevelManager : MonoBehaviour
         else if (collision == PlayerController.CollisionType.Exit)
         {
             //Exit level
-            int target = GetCurrentLevelTargetScore();
+            StartCoroutine(DisplayResults());
+        }
+    }
 
-            if (memoryModeOn)
+    IEnumerator DisplayResults()
+    {
+        endScreen.SetActive(true);
+        for (int i = 0; i <= bugsEaten; i++)
+        {
+            bugsTotalPointsTxt.text = "Total Bugs Eaten: " + i;
+            yield return new WaitForSeconds(0.25f);
+        }
+
+        for (int i = 0; i <= echosUsed; i++)
+        {
+            echoesTotalTxt.text = "Echoes used: " + i;
+            yield return new WaitForSeconds(0.25f);
+        }
+
+        int diffBonus = GetCurrentLevelDifficultyBonus();
+        difficultyBonusTxt.text = "Difficulty Bonus: +" + diffBonus;
+        yield return new WaitForSeconds(0.25f);
+
+        int memBonus = 0;
+        if (echosUsed == 0)
+        {
+            memBonus = GetCurrentLevelMemoryScoreBonus();
+        }
+        memoryBonusTxt.text = "Memory Bonus: +" + memBonus;
+        yield return new WaitForSeconds(0.25f);
+
+        int total = 0;
+        bugsTotalPointsTxt.text = "<i>Total Bugs Eaten: " + bugsEaten + "</i>";
+        for (int i = 0; i <= bugsEaten * 10; i++)
+        {
+            totalScoreTxt.text = "Total Score: " + i;
+            total++;
+            yield return new WaitForSeconds(0.25f);
+        }
+        bugsTotalPointsTxt.text = "Total Bugs Eaten: " + bugsEaten;
+        difficultyBonusTxt.text = "<i>Difficulty Bonus: +" + diffBonus + "</i>";
+        total += diffBonus;
+        totalScoreTxt.text = "Total Score: " + total;
+        yield return new WaitForSeconds(0.25f);
+        difficultyBonusTxt.text = "Difficulty Bonus: +" + diffBonus;
+        memoryBonusTxt.text = "<i>Memory Bonus: +" + memBonus + "</i>";
+        total += memBonus;
+        totalScoreTxt.text = "Total Score: " + total;
+        yield return new WaitForSeconds(0.25f);
+        memoryBonusTxt.text = "Memory Bonus: +" + memBonus;
+
+
+        if (fullScoreModeOn)
+        {
+            if (total < targetScore)
             {
-                target += GetCurrentLevelMemoryScoreBonus();
-            }
-
-            //Add in display showcasing score and success states
-
-            if (fullScoreModeOn)
-            {
-
-                if (levelScore >= target)
-                {
-                    //Display screen that has button with functionality of:
-                    //NextLevel();
-                    //or
-                    //Load Title Screen
-                }
-                else
-                {
-                    //fail state for full score mode
-                    //Display screen that has button with functionality of:
-                    //PlayerDeath();
-                    //Respawn();
-                    //or
-                    //Load Title Screen
-                }
-
-            }
-            else
-            {
-                //Display screen that has button with functionality of:
-                //NextLevel();
-                //or
-                //Load Title Screen
+                finishStateTxt.text = "Target not reached...";
+                retryLevelBttn.gameObject.SetActive(true);
+                yield break;
             }
         }
+
+        finishStateTxt.text = "Level Complete!";
+        nextLevelBttn.gameObject.SetActive(true);
+    }
+
+
+    public void NextLevel()
+    {
+        SceneManager.LoadScene(GetNextLevel());
+    }
+
+    public void ExitToTitle()
+    {
+        SceneManager.LoadScene("Title Screen");
     }
 
 }

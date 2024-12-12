@@ -52,6 +52,17 @@ public class GameManager : MonoBehaviour
         return levels[currentLevel].baseScore;
     }
 
+    public static int GetCurrentLevelDifficultyBonus()
+    {
+        return levels[currentLevel].difficultyRank switch
+        {
+            GameMode.Easy => 0,
+            GameMode.Normal => 5,
+            GameMode.Hard => 10,
+            _ => 0,
+        };
+    }
+
     /// <summary>
     /// Get the amount awarded for successful memory mode completion
     /// </summary>
@@ -65,7 +76,7 @@ public class GameManager : MonoBehaviour
     /// Get the name of the next level available
     /// </summary>
     /// <returns></returns>
-    public static string NextLevel()
+    public static string GetNextLevel()
     {
         currentLevel++;
 
